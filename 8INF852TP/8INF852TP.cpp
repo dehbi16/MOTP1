@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 	LeProb = new SMSSDTProblem(argv[2]);	//Lecture du deuxi;eme paramètre à partir de la console
 	//LeProb->printOn(cout);	// Imprimer le Problème
 	SMSSDTSolution* pSolution = NULL;	//Solution intermédiaire
-
+	int mode = 0; // 
 
 	// argv[1] exécutions de la génération aléatoire
 	for (int j = 0; j < atoi(argv[1]); j++)
@@ -23,14 +23,27 @@ int main(int argc, char* argv[])
 		SMSSDTSolution	Smeilleur(LeProb->getN());	//Sauvegarde de la meilleure solution
 		for (int i = 0; i < 1000; i++)
 		{
-			pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une solution aléatoire
-			Tools::Evaluer(LeProb, *pSolution);	//Évaluer la solution
-			if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
-			{
-				Smeilleur = *pSolution;
-				dTheBestFitness = Smeilleur.getObj();
+			switch (mode) {
+			case 0: 
+				pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une solution aléatoire
+				Tools::Evaluer(LeProb, *pSolution);	//Évaluer la solution
+				if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+				{
+					Smeilleur = *pSolution;
+					dTheBestFitness = Smeilleur.getObj();
+				}
+				delete pSolution;
+				break; 
+			case 1:
+
+				break;
+			case 2:
+				break;
+			case 3: 
+				break;
+
 			}
-			delete pSolution;
+			
 		}
 		End = clock(); // Arrêter le clock
 		Elapsed = (double(End - Start)) / CLOCKS_PER_SEC;	//Calculer le temps écoulé
