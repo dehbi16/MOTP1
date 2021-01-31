@@ -3,7 +3,7 @@
 
 
 #include "SMSSDTSolution.h"
-
+#include "Tools.h"
 
 #include <cmath>
 #include <conio.h>
@@ -35,7 +35,17 @@ SMSSDTSolution::SMSSDTSolution(int N, bool test) {
 	}
 }
 
+SMSSDTSolution::SMSSDTSolution(SMSSDTProblem* LeProb, SMSSDTSolution& Sol) {
+	this->setObj(-1);
+	int N = LeProb->getN();
+	Solution.resize(N);
+	TT.resize(N);
+	CT.resize(N);
+	ST.resize(N);
+	vector<int> s = Sol.Solution;
+	Tools::swapMove(Sol.Solution, Solution, N);
 
+}
 
 
 /**

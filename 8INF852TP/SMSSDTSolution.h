@@ -5,6 +5,9 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+
+#include "SMSSDTProblem.h"
+
 using namespace std;
 
 class SMSSDTSolution
@@ -40,6 +43,13 @@ public:
 	**/
 	SMSSDTSolution(int N, bool test);
 
+
+	/**
+	 * SMSSDTSolution(SMSSDTProblem* LeProb, SMSSDTSolution* Sol);
+	 * Constructeur de la classe
+	 * générer la meilleure solution voisinnage à Sol en utilisant Descente
+	**/
+	SMSSDTSolution(SMSSDTProblem* LeProb, SMSSDTSolution& Sol);
 
 	/* Destructeur*/
 	~SMSSDTSolution();

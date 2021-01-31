@@ -81,6 +81,78 @@ public:
 		Sol.setObj(obj);
 	}
 
+	static void swapMove(vector<int> const& solution, vector<int>& voisins, int N) {
+		int i = rand() % (N);
+		int j;
+
+		do {
+			j = rand() % (N);
+		} while (i == j);
+		for (int k = 0; k < N; k++) voisins[k] = solution[k];
+		voisins[i] = solution[j];
+		voisins[j] = solution[i];
+	}
+
+	static void inversionMove(vector<int> const& solution, vector<int>& voisins, int N, int k) {
+		for (int i = 0; i < N; i++) voisins[i] = solution[i];
+		int rInd = rand() % (N - k);//rng.uniform (N - i);
+		for (int i = 0; i < k; i++) voisins[rInd + i] = solution[rInd + k - i - 1];
+
+	}
+
+	static void scrambleMove(vector<int> const& solution, vector<int>& voisins, int N, int k) {
+		for (int i = 0; i < N; i++) voisins[i] = solution[i];
+		int rInd = rand() % (N - k);//rng.uniform (N - i);
+
+		int x; int j;
+		for (int i = 0; i < k; i++) {
+			j = rand() % k;
+			x = voisins[rInd + i];
+			voisins[rInd + i] = voisins[rInd + j];
+			voisins[rInd + j] = x;
+		}
+	}
+
+	static void insertionMove(vector<int> const& solution, vector<int>& voisins, int N) {
+		int i = rand() % (N);
+		int j;
+		do {
+			j = rand() % (N);
+		} while (i == j);
+
+		if (j < i) {
+			j = i + j;
+			i = j - i;
+			j = j - i;
+		}
+		
+
+		for (int k = 0; k < N; k++) {
+			if (k < i)voisins[k] = solution[k];
+			else if (k == i) {
+				voisins[k] = solution[j];
+
+				voisins[k + 1] = solution[i];
+			}
+			else if (k <= j) voisins[k + 1] = solution[k];
+			else voisins[k] = solution[k];
+		}
+
+	}
+
+	static bool contains(vector<vector <int>> Ta, vector<int> solution) {
+		int s;
+		for (int i = 0; i < Ta.size(); i++) {
+			s = 0;
+			for (int j = 0; j < solution.size(); j++) {
+				if (Ta[i][j] == solution[j]) s += 1;
+			}
+			if (s == solution.size()) return true;
+		}
+		return false;
+
+	}
+
 	//Fonction  servant à logguer
 	static void WriteReportLog(double Elapsed, SMSSDTSolution BestSolution, char* ProblemName) {
 
