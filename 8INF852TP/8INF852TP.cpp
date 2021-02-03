@@ -201,9 +201,9 @@ int main(int argc, char* argv[])
 				}
 				temperature = temperature * delta;
 			}
-			cout << "i : " << i << endl;
-			cout << "nombreStagnation : " << nombreStagnation << endl;
-			cout << "dTheBestFitness : " << dTheBestFitness << endl;
+			//cout << "i : " << i << endl;
+			//cout << "nombreStagnation : " << nombreStagnation << endl;
+			//cout << "dTheBestFitness : " << dTheBestFitness << endl;
 		}
 		break;
 
@@ -212,7 +212,7 @@ int main(int argc, char* argv[])
 		case 4:
 			// INITIALISATION DE LISTE TABOU
 			vector<vector <int>> Ta;
-			int N = 6;
+			int N = 10;
 			int index = 0;
 			Ta.resize(N);
 			for (int i = 0; i < N; i++) Ta[i].resize(LeProb->getN());
@@ -231,7 +231,7 @@ int main(int argc, char* argv[])
 				} while (Tools::contains(Ta, Svoisin1.Solution));
 
 				Tools::Evaluer(LeProb, Svoisin1);
-				for (int j = 0; j < 7; j++) {
+				for (int j = 0; j < 30; j++) {
 					do {
 						pSolution = new SMSSDTSolution(LeProb, Svoisin);
 					} while (Tools::contains(Ta, pSolution->Solution));
