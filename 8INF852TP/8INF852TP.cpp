@@ -4,6 +4,9 @@
 #include "Tools.h"
 using namespace std;
 
+#include <math.h>
+#include <iomanip>
+
 
 int main(int argc, char* argv[])
 {
@@ -14,7 +17,7 @@ int main(int argc, char* argv[])
 	LeProb = new SMSSDTProblem(argv[2]);	//Lecture du deuxi;eme paramètre à partir de la console
 	//LeProb->printOn(cout);	// Imprimer le Problème
 	SMSSDTSolution* pSolution = NULL;	//Solution intermédiaire
-	int mode = 4; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
+	int mode = 3; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
 
 	// argv[1] exécutions de la génération aléatoire
 	for (int j = 0; j < atoi(argv[1]); j++)
@@ -41,8 +44,55 @@ int main(int argc, char* argv[])
 			break;
 		case 1:
 			break;
+
+
 		case 3:
-			break;
+		{
+			int nombreStagnation = 0;
+			int nombreStagnationMax = 150;
+			float temperature = 1;	//On definit une valeur initiale pour la température
+			float delta = 1;	//On définie le facteur de décroisance de la température
+
+			pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une génére une solution aléatoire pour initilaiser l'agorithme
+			Tools::Evaluer(LeProb, *pSolution);	//On évalue la solution crée
+			if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+			{
+				Smeilleur = *pSolution;
+				dTheBestFitness = Smeilleur.getObj();
+			}
+
+			int i;
+			for (i = 0; i < 1000 /*&& nombreStagnation < nombreStagnationMax*/; i++)
+			{
+				SMSSDTSolution* nouvelleSolution = new SMSSDTSolution(LeProb, *pSolution);	//On crée aléatoirement une solution voisine de la solution actuelle
+				Tools::Evaluer(LeProb, *nouvelleSolution);
+				float nombreAleatoire = (float)(((float)rand() / ((float)RAND_MAX + 1.0)) * (1 - 0));	//On choisie aléatoirement un nombre entre 0 et 1
+				//out << "La diferance est de  : " << pSolution->getObj() - nouvelleSolution->getObj() << endl;
+				//cout << "La proba est de  : " << setprecision(5) << exp((float)(pSolution->getObj() - nouvelleSolution->getObj()) / temperature) << endl;
+				if (nombreAleatoire < exp((float)(pSolution->getObj() - nouvelleSolution->getObj())/ temperature))
+				{
+					pSolution = nouvelleSolution;
+					nombreStagnation = 0;
+					if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+					{
+						Smeilleur = *pSolution;
+						dTheBestFitness = Smeilleur.getObj();
+					}
+				}
+				else
+				{
+					nombreStagnation = nombreStagnation + 1;
+				}
+				temperature = temperature * delta;
+			}
+			cout << "i : " << i << endl;
+			cout << "nombreStagnation : " << nombreStagnation << endl;
+			cout << "dTheBestFitness : " << dTheBestFitness << endl;
+		}
+		break;
+
+
+
 		case 4:
 			// INITIALISATION DE LISTE TABOU
 			vector<vector <int>> Ta;

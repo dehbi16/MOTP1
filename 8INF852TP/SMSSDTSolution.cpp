@@ -30,6 +30,9 @@ SMSSDTSolution::SMSSDTSolution(int N, bool test) {
 	for (int i = 0; i < N; i++)
 	{
 		rInd = (int)(((double)rand() / ((double)RAND_MAX + 1.0)) * (N - i));//rng.uniform (N - i);
+
+		//	1/(int)(((double)rand() / ((double)RAND_MAX + 1.0)) * (1000 - 0))
+		// exp(obj_meilleur - min)/temp
 		Solution[i] = possibles[rInd];
 		possibles[rInd] = possibles[N - i - 1];
 	}
