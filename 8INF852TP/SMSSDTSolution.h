@@ -70,6 +70,8 @@ public:
 		return FctObj;
 	}
 
+	void  inverse(int N, int a, int b);
+	void opt(int N, int a, int b);
 
 	void setObj(double obj) {
 		FctObj = obj;

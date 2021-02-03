@@ -1,28 +1,106 @@
-
+ï»¿
 
 #include <iostream>
 #include "Tools.h"
 using namespace std;
 
-#include <math.h>
-#include <iomanip>
+void voi(SMSSDTSolution& Sol, SMSSDTProblem* LeProb) { // fonction qui parcours le voisinage 
+	double	dTheBestFitness = 100000;
+	SMSSDTSolution	Smeilleur(LeProb->getN());
 
+	for (int i = 0; i < LeProb->getN(); i++) {
+		for (int j = i + 1; j < LeProb->getN(); j++) {
+
+			Sol.opt(LeProb->getN(), i, j);
+			Tools::Evaluer(LeProb, Sol);
+			//Ã‰valuer la solution
+			if (Sol.getObj() < dTheBestFitness) // Si amÃ©liore meilleure solution, la garder
+			{
+				Smeilleur = Sol;
+				dTheBestFitness = Smeilleur.getObj();
+
+			}
+			Sol.opt(LeProb->getN(), i, j);
+
+			//S = Sol;
+		}
+	}
+	Sol = Smeilleur;
+}
+void desente(SMSSDTProblem* LeProb, SMSSDTSolution* pSolution, SMSSDTSolution& Smeilleur) {
+
+
+	double	dTheBestFitness = 100000;	//Fitness de la meilleure solution
+
+
+
+	int e = 0;
+	Tools::Evaluer(LeProb, *pSolution);	//Ã‰valuer la solution
+	dTheBestFitness = pSolution->getObj();
+	while (e == 0) {
+		SMSSDTSolution	sol(LeProb->getN());
+		sol = *pSolution;
+		voi(sol, LeProb);
+
+
+
+		if (sol.getObj() < dTheBestFitness) // Si la meilleur sol du voisinage  amÃ©liore meilleure solution, la garder
+		{
+			*pSolution = sol;
+			dTheBestFitness = pSolution->getObj();
+		}
+		else {
+			e = 1;
+
+		}
+
+		//Logguer le temps et la meilleure solution
+	}
+	Smeilleur = *pSolution;
+	//End = clock(); // ArrÃªter le clock
+	//Elapsed = (double(End - Start)) / CLOCKS_PER_SEC;	//Calculer le temps Ã©coulÃ©
+	//Tools::WriteReportLog(Elapsed, *pSolution, LeProb->getNomFichier());
+}
+
+void shaking(SMSSDTProblem* LeProb, vector<int> const& solution, vector<int>& voisins, int mode) {
+	switch (mode) {
+	case 0:
+		Tools::swapMove(solution, voisins, LeProb->getN());
+		break;
+	case 1:
+		Tools::insertionMove(solution, voisins, LeProb->getN());
+		break;
+	case 2:
+
+		Tools::EDDMove(solution, voisins, LeProb->getD(), LeProb->getN(), rand() % (LeProb->getN()));
+		break;
+	case 4:
+
+		Tools::scrambleMove(solution, voisins, LeProb->getN(), rand() % (LeProb->getN()));
+		break;
+	case 5:
+		Tools::inversionMove(solution, voisins, LeProb->getN(), rand() % (LeProb->getN()));
+
+		break;
+	}
+}
 
 int main(int argc, char* argv[])
 {
-	clock_t	Start, End;	//Déclaration de variable afin de calculer le temps écoulé
-	double Elapsed = 0;	//Variable servant à calculer le temps écoulé (Différence entre End et Start
+	clock_t	Start, End;	//Dï¿½claration de variable afin de calculer le temps ï¿½coulï¿½
+	double Elapsed = 0;	//Variable servant ï¿½ calculer le temps ï¿½coulï¿½ (Diffï¿½rence entre End et Start
 	double	dTheBestFitness = 100000;	//Fitness de la meilleure solution
-	SMSSDTProblem* LeProb;	//Déclaration d'un problème	
-	LeProb = new SMSSDTProblem(argv[2]);	//Lecture du deuxi;eme paramètre à partir de la console
-	//LeProb->printOn(cout);	// Imprimer le Problème
-	SMSSDTSolution* pSolution = NULL;	//Solution intermédiaire
+	SMSSDTProblem* LeProb;	//Dï¿½claration d'un problï¿½me	
+	LeProb = new SMSSDTProblem(argv[2]);	//Lecture du deuxi;eme paramï¿½tre ï¿½ partir de la console
+	//LeProb->printOn(cout);	// Imprimer le Problï¿½me
+	SMSSDTSolution* pSolution = NULL;	//Solution intermï¿½diaire
 	int mode = 3; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
-
-	// argv[1] exécutions de la génération aléatoire
+	int amelioration = 0;
+	int m = 0;
+	// argv[1] exï¿½cutions de la gï¿½nï¿½ration alï¿½atoire
 	for (int j = 0; j < atoi(argv[1]); j++)
 	{
-		Start = clock();	//Démarrer l'horloge	
+		Start = clock();	//Dï¿½marrer l'horloge	
 		SMSSDTSolution	Smeilleur = NULL;	//Sauvegarde de la meilleure solution
 		SMSSDTSolution	Svoisin = NULL;
 		SMSSDTSolution	Svoisin1 = NULL;
@@ -32,9 +110,9 @@ int main(int argc, char* argv[])
 			Smeilleur = SMSSDTSolution(LeProb->getN());
 			for (int i = 0; i < 1000; i++)
 			{
-				pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une solution aléatoire
-				Tools::Evaluer(LeProb, *pSolution);	//Évaluer la solution
-				if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+				pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une solution alï¿½atoire
+				Tools::Evaluer(LeProb, *pSolution);	//ï¿½valuer la solution
+				if (pSolution->getObj() < dTheBestFitness) // Si amï¿½liore meilleure solution, la garder
 				{
 					Smeilleur = *pSolution;
 					dTheBestFitness = Smeilleur.getObj();
@@ -43,6 +121,44 @@ int main(int argc, char* argv[])
 			}
 			break;
 		case 1:
+			pSolution = new SMSSDTSolution(LeProb->getN(), true);
+			desente(LeProb, pSolution, Smeilleur);
+			break;
+		case 2:
+			//desente(LeProb, Smeilleur);
+
+			//Une solution alÃ©atoire
+			pSolution = new SMSSDTSolution(LeProb->getN(), true);
+
+			//pSolution = new SMSSDTSolution(LeProb); // solution par heuristique EDD
+			Tools::Evaluer(LeProb, *pSolution);
+
+			Svoisin = *pSolution;
+			Svoisin1 = *pSolution;
+			amelioration = 0;
+
+			while (amelioration < 100) {
+				shaking(LeProb, pSolution->Solution, Svoisin.Solution, m);
+				desente(LeProb, &Svoisin, Svoisin1);
+
+				if (Svoisin1.getObj() < pSolution->getObj()) {
+					*pSolution = Svoisin1;
+					m = -1;
+					amelioration = 0;
+				}
+				else {
+					amelioration++;
+				}
+				if (m < 4) {
+					m++;
+				}
+				else { m = 0; }
+				if (pSolution->getObj() == 0) {
+					break;
+				}
+			}
+			amelioration = 0;
+			Smeilleur = *pSolution;
 			break;
 
 
@@ -50,12 +166,12 @@ int main(int argc, char* argv[])
 		{
 			int nombreStagnation = 0;
 			int nombreStagnationMax = 150;
-			float temperature = 1;	//On definit une valeur initiale pour la température
-			float delta = 1;	//On définie le facteur de décroisance de la température
+			float temperature = 1;	//On definit une valeur initiale pour la tempï¿½rature
+			float delta = 1;	//On dï¿½finie le facteur de dï¿½croisance de la tempï¿½rature
 
-			pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une génére une solution aléatoire pour initilaiser l'agorithme
-			Tools::Evaluer(LeProb, *pSolution);	//On évalue la solution crée
-			if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+			pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une gï¿½nï¿½re une solution alï¿½atoire pour initilaiser l'agorithme
+			Tools::Evaluer(LeProb, *pSolution);	//On ï¿½value la solution crï¿½e
+			if (pSolution->getObj() < dTheBestFitness) // Si amï¿½liore meilleure solution, la garder
 			{
 				Smeilleur = *pSolution;
 				dTheBestFitness = Smeilleur.getObj();
@@ -64,16 +180,16 @@ int main(int argc, char* argv[])
 			int i;
 			for (i = 0; i < 1000 /*&& nombreStagnation < nombreStagnationMax*/; i++)
 			{
-				SMSSDTSolution* nouvelleSolution = new SMSSDTSolution(LeProb, *pSolution);	//On crée aléatoirement une solution voisine de la solution actuelle
+				SMSSDTSolution* nouvelleSolution = new SMSSDTSolution(LeProb, *pSolution);	//On crï¿½e alï¿½atoirement une solution voisine de la solution actuelle
 				Tools::Evaluer(LeProb, *nouvelleSolution);
-				float nombreAleatoire = (float)(((float)rand() / ((float)RAND_MAX + 1.0)) * (1 - 0));	//On choisie aléatoirement un nombre entre 0 et 1
+				float nombreAleatoire = (float)(((float)rand() / ((float)RAND_MAX + 1.0)) * (1 - 0));	//On choisie alï¿½atoirement un nombre entre 0 et 1
 				//out << "La diferance est de  : " << pSolution->getObj() - nouvelleSolution->getObj() << endl;
 				//cout << "La proba est de  : " << setprecision(5) << exp((float)(pSolution->getObj() - nouvelleSolution->getObj()) / temperature) << endl;
 				if (nombreAleatoire < exp((float)(pSolution->getObj() - nouvelleSolution->getObj())/ temperature))
 				{
 					pSolution = nouvelleSolution;
 					nombreStagnation = 0;
-					if (pSolution->getObj() < dTheBestFitness) // Si améliore meilleure solution, la garder
+					if (pSolution->getObj() < dTheBestFitness) // Si amï¿½liore meilleure solution, la garder
 					{
 						Smeilleur = *pSolution;
 						dTheBestFitness = Smeilleur.getObj();
@@ -105,10 +221,11 @@ int main(int argc, char* argv[])
 			Svoisin = SMSSDTSolution(LeProb->getN(), true);
 			Tools::Evaluer(LeProb, Svoisin);
 			Smeilleur = Svoisin;
-
-			for (int i = 0; i < 1000; i++) {
+			int nbiter = 0;
+			while (nbiter < 100) {
+				nbiter++;
 				// TROUVER LA SOLUTION MINIMISE LA FONCTION DANS Nt(X)
-				// vérifier si Svoisin dans la liste Tabou
+				// vï¿½rifier si Svoisin dans la liste Tabou
 				do {
 					Svoisin1 = SMSSDTSolution(LeProb, Svoisin);
 				} while (Tools::contains(Ta, Svoisin1.Solution));
@@ -121,13 +238,14 @@ int main(int argc, char* argv[])
 
 					Tools::Evaluer(LeProb, *pSolution);
 					if (pSolution->getObj() < Svoisin1.getObj()) {
-						// vérifier si psolution dans la liste Tabou
+						// vï¿½rifier si psolution dans la liste Tabou
 						Svoisin1 = *pSolution;
 					}
 				}
 
 				if (Svoisin1.getObj() < Smeilleur.getObj()) {
 					Smeilleur = Svoisin1;
+					nbiter = 0;
 				}
 				Svoisin = Svoisin1;
 
@@ -143,8 +261,9 @@ int main(int argc, char* argv[])
 				}
 				cout<< endl;
 				*/
-
 			}
+
+			
 			break;
 		}
 		
@@ -153,8 +272,8 @@ int main(int argc, char* argv[])
 			
 			
 	
-		End = clock(); // Arrêter le clock
-		Elapsed = (double(End - Start)) / CLOCKS_PER_SEC;	//Calculer le temps écoulé
+		End = clock(); // Arrï¿½ter le clock
+		Elapsed = (double(End - Start)) / CLOCKS_PER_SEC;	//Calculer le temps ï¿½coulï¿½
 		Tools::WriteReportLog(Elapsed, Smeilleur, LeProb->getNomFichier());	//Logguer le temps et la meilleure solution
 		dTheBestFitness = 100000;
 

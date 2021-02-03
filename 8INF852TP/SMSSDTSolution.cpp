@@ -71,6 +71,33 @@ SMSSDTSolution::~SMSSDTSolution() {
 	Solution.clear();
 }
 
+void SMSSDTSolution::inverse(int N, int a, int b) {
+	if (a != b) {
+		if (a > b) {
+			int x = a;
+			a = b;
+			b = x;
+		}
+		int d = b - a;
+		for (int i = 1; i < d / 2; i++) {
+			int x = Solution[i + a];
+			Solution[i + a] = Solution[-i + b];
+			Solution[-i + b] = x;
+
+		}
+	}
+}
+
+void SMSSDTSolution::opt(int N, int a, int b) {
+
+
+
+	int x = Solution[a];
+	Solution[a] = Solution[b];
+	Solution[b] = x;
+	inverse(N, a, b);
+
+}
 
 
 

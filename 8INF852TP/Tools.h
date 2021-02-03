@@ -113,6 +113,21 @@ public:
 		}
 	}
 
+	static void EDDMove(vector<int> const& solution, vector<int>& voisins, const vector<int>& d, int N, int k) {
+		for (int i = 0; i < N; i++) voisins[i] = solution[i];
+		int r = rand() % (N - k) + k;
+
+		for (int i = k; i < r; i++) {
+			for (int j = i + 1; j < r; j++) {
+				if (d[voisins[i]] > d[voisins[j]]) {
+					int x = voisins[i];
+					voisins[i] = voisins[j];
+					voisins[j] = x;
+				}
+			}
+		}
+	}
+
 	static void insertionMove(vector<int> const& solution, vector<int>& voisins, int N) {
 		int i = rand() % (N);
 		int j;
