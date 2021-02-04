@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	LeProb = new SMSSDTProblem(argv[2]);	//Lecture du deuxi;eme param�tre � partir de la console
 	//LeProb->printOn(cout);	// Imprimer le Probl�me
 	SMSSDTSolution* pSolution = NULL;	//Solution interm�diaire
-	int mode = 3; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
+	int mode = 2; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
 	int amelioration = 0;
 	int m = 0;
 	// argv[1] ex�cutions de la g�n�ration al�atoire
@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
 			Svoisin1 = *pSolution;
 			amelioration = 0;
 
-			while (amelioration < 100) {
+			while (amelioration < 50) {
 				shaking(LeProb, pSolution->Solution, Svoisin.Solution, m);
 				desente(LeProb, &Svoisin, Svoisin1);
 
@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
 				else {
 					amelioration++;
 				}
-				if (m < 4) {
+				if (m < 5) {
 					m++;
 				}
 				else { m = 0; }
