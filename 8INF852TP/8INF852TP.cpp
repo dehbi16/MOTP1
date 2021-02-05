@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
 	//LeProb->printOn(cout);	// Imprimer le Probl�me
 	SMSSDTSolution* pSolution = NULL;	//Solution interm�diaire
 	int mode = 2; // 0 : methode prof. 1 : descente. 2 : VNS. 3: RS. 4 : recherche Tabou  
-	int amelioration = 0;
 	int m = 0;
+	
 	// argv[1] ex�cutions de la g�n�ration al�atoire
 	for (int j = 0; j < atoi(argv[1]); j++)
 	{
@@ -104,6 +104,8 @@ int main(int argc, char* argv[])
 		SMSSDTSolution	Smeilleur = NULL;	//Sauvegarde de la meilleure solution
 		SMSSDTSolution	Svoisin = NULL;
 		SMSSDTSolution	Svoisin1 = NULL;
+		int nbiter = 0;
+		int nbiterMax = 50;
 
 		switch (mode) {
 		case 0:
@@ -135,19 +137,19 @@ int main(int argc, char* argv[])
 
 			Svoisin = *pSolution;
 			Svoisin1 = *pSolution;
-			amelioration = 0;
+			
 
-			while (amelioration < 50) {
+			while (nbiter< nbiterMax) { 
 				shaking(LeProb, pSolution->Solution, Svoisin.Solution, m);
 				desente(LeProb, &Svoisin, Svoisin1);
 
 				if (Svoisin1.getObj() < pSolution->getObj()) {
 					*pSolution = Svoisin1;
 					m = -1;
-					amelioration = 0;
+					nbiter = 0;
 				}
 				else {
-					amelioration++;
+					nbiter++;
 				}
 				if (m < 5) {
 					m++;
@@ -157,17 +159,15 @@ int main(int argc, char* argv[])
 					break;
 				}
 			}
-			amelioration = 0;
 			Smeilleur = *pSolution;
 			break;
 
 
 		case 3:
 		{
-			int nombreStagnation = 0;
-			int nombreStagnationMax = 150;
-			float temperature = 1;	//On definit une valeur initiale pour la temp�rature
-			float delta = 1;	//On d�finie le facteur de d�croisance de la temp�rature
+			
+			float temperature = 2;	//On definit une valeur initiale pour la temp�rature
+			float delta = 0.95;	//On d�finie le facteur de d�croisance de la temp�rature
 
 			pSolution = new SMSSDTSolution(LeProb->getN(), true);	//Une g�n�re une solution al�atoire pour initilaiser l'agorithme
 			Tools::Evaluer(LeProb, *pSolution);	//On �value la solution cr�e
@@ -177,33 +177,30 @@ int main(int argc, char* argv[])
 				dTheBestFitness = Smeilleur.getObj();
 			}
 
-			int i;
-			for (i = 0; i < 1000 /*&& nombreStagnation < nombreStagnationMax*/; i++)
+			
+			while(nbiter<nbiterMax)
 			{
 				SMSSDTSolution* nouvelleSolution = new SMSSDTSolution(LeProb, *pSolution);	//On cr�e al�atoirement une solution voisine de la solution actuelle
 				Tools::Evaluer(LeProb, *nouvelleSolution);
 				float nombreAleatoire = (float)(((float)rand() / ((float)RAND_MAX + 1.0)) * (1 - 0));	//On choisie al�atoirement un nombre entre 0 et 1
-				//out << "La diferance est de  : " << pSolution->getObj() - nouvelleSolution->getObj() << endl;
-				//cout << "La proba est de  : " << setprecision(5) << exp((float)(pSolution->getObj() - nouvelleSolution->getObj()) / temperature) << endl;
 				if (nombreAleatoire < exp((float)(pSolution->getObj() - nouvelleSolution->getObj())/ temperature))
 				{
 					pSolution = nouvelleSolution;
-					nombreStagnation = 0;
+					//nombreStagnation = 0;
 					if (pSolution->getObj() < dTheBestFitness) // Si am�liore meilleure solution, la garder
 					{
 						Smeilleur = *pSolution;
 						dTheBestFitness = Smeilleur.getObj();
+						nbiter = 0;
 					}
 				}
 				else
 				{
-					nombreStagnation = nombreStagnation + 1;
+					nbiter++;
 				}
 				temperature = temperature * delta;
 			}
-			//cout << "i : " << i << endl;
-			//cout << "nombreStagnation : " << nombreStagnation << endl;
-			//cout << "dTheBestFitness : " << dTheBestFitness << endl;
+			
 		}
 		break;
 
@@ -221,8 +218,7 @@ int main(int argc, char* argv[])
 			Svoisin = SMSSDTSolution(LeProb->getN(), true);
 			Tools::Evaluer(LeProb, Svoisin);
 			Smeilleur = Svoisin;
-			int nbiter = 0;
-			while (nbiter < 100) {
+			while (nbiter < nbiterMax) {
 				nbiter++;
 				// TROUVER LA SOLUTION MINIMISE LA FONCTION DANS Nt(X)
 				// v�rifier si Svoisin dans la liste Tabou
@@ -252,15 +248,7 @@ int main(int argc, char* argv[])
 				Ta[index % N] = Svoisin.Solution;
 
 				index++;
-				/*
-				for (int k = 0; k < N; k++) {
-					for (int l = 0; l < LeProb->getN(); l++) {
-						cout << Ta[k][l] << " ";
-					}
-					cout << endl;
-				}
-				cout<< endl;
-				*/
+				
 			}
 
 			

@@ -50,7 +50,7 @@ public:
 	 * générer la meilleure solution voisinnage à Sol en utilisant Descente
 	**/
 	SMSSDTSolution(SMSSDTProblem* LeProb, SMSSDTSolution& Sol);
-
+	SMSSDTSolution(SMSSDTProblem* LeProb);
 	/* Destructeur*/
 	~SMSSDTSolution();
 

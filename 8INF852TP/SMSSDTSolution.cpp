@@ -50,6 +50,28 @@ SMSSDTSolution::SMSSDTSolution(SMSSDTProblem* LeProb, SMSSDTSolution& Sol) {
 
 }
 
+// CONSTRUCTEUR REGLE EDD
+SMSSDTSolution::SMSSDTSolution(SMSSDTProblem* LeProb) {
+	this->setObj(-1);
+	int N = LeProb->getN();
+	std::vector < int > d(N), p(N);
+	d = LeProb->getD();
+	Solution.resize(N);
+	TT.resize(N);
+	CT.resize(N);
+	ST.resize(N);
+	for (int k = 0; k < N; k++) Solution[k] = k;
+	for (int i = 0; i < N; i++) {
+		for (int j = i + 1; j < N; j++) {
+			if (d[Solution[i]] > d[Solution[j]]) {
+				int x = Solution[i];
+				Solution[i] = Solution[j];
+				Solution[j] = x;
+			}
+		}
+	}
+}
+
 
 /**
  * Save
@@ -95,7 +117,7 @@ void SMSSDTSolution::opt(int N, int a, int b) {
 	int x = Solution[a];
 	Solution[a] = Solution[b];
 	Solution[b] = x;
-	inverse(N, a, b);
+	//inverse(N, a, b);
 
 }
 
